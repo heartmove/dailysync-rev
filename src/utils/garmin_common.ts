@@ -159,7 +159,19 @@ export const addRunningWorkout = async ( name: string, meters: number, descripti
 
 export const syncWorkouts = async(fromClient: GarminClientType, toClient: GarminClientType, fromType: "CN" | "GLOBAL"): Promise<String> => {
     try{
-        const workouts: IWorkout[] = (await fromClient.getWorkouts(0, 100)).reverse();
+        let workouts: IWorkout[] = (await fromClient.getWorkouts(0, 100));
+        workouts.sort((a: IWorkout, b: IWorkout) =>
+        {
+            if (!a.workoutId) {
+                return -1
+            } else if(!b.workoutId) {
+                return -1
+            } else if(a.workoutId > b.workoutId){
+                return 1
+            } else {
+                return -1
+            }
+        })
         const syncType = "workout"
         const lastName = await getSyncConfigFromDB(fromType, syncType)
 
