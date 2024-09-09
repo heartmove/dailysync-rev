@@ -199,7 +199,7 @@ export const syncWorkouts = async(fromClient: GarminClientType, toClient: Garmin
         }
 
     }catch(e) {
-        
+        console.log(e);
     }
     return ""
 }
