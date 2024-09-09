@@ -178,11 +178,21 @@ export const syncWorkouts = async(fromClient: GarminClientType, toClient: Garmin
         let currentLastName = ""
         console.log(`可能需要同步课表数量: ${workouts.length},上次最后一条记录为【${lastName}】 `);
         let count = 0
-        for (let workout of workouts) {
+
+        let skipCount = 0
+        let total = workouts.length
+        for (let i = 0; i++; i < total) {
+            let workout = workouts[i]
             // 遇到了相同的就中止同步
             if (workout.workoutName == lastName) {
+                skipCount = i
                 break;
             }
+        }
+
+        // 跳过前面的，直接执行后面的
+        for (let i = skipCount + 1; i++; i < total) {
+            let workout = workouts[i]
             try{
                 if (!workout.workoutId) {
                     continue;
@@ -198,7 +208,7 @@ export const syncWorkouts = async(fromClient: GarminClientType, toClient: Garmin
                 currentLastName = workout.workoutName
                 count++
             } catch {
-
+                break
             }
         }
         console.log(`最终同步课表数量: ${count},最后的一条记录为【${currentLastName}】 `);
