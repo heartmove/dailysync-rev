@@ -7,7 +7,7 @@ import {
     GARMIN_USERNAME_DEFAULT,
     GARMIN_SYNC_NUM_DEFAULT
 } from '../constant';
-import { downloadGarminActivity, uploadGarminActivity } from './garmin_common';
+import { downloadGarminActivity, uploadGarminActivity, syncWorkouts } from './garmin_common';
 import { GarminClientType } from './type';
 import { number2capital } from './number_tricks';
 const core = require('@actions/core');
@@ -121,4 +121,6 @@ export const syncGarminCN2GarminGlobal = async () => {
             }
         }
     }
+
+    await syncWorkouts(clientGlobal, clientCN, "GLOBAL")
 };

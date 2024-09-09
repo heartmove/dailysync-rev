@@ -10,11 +10,19 @@ import {
     GARMIN_URL_DEFAULT,
     GARMIN_USERNAME_DEFAULT,
 } from '../constant';
-import { GarminClientType } from './type';
+import { GarminClientType, } from './type';
 import _ from 'lodash';
+import {IWorkout, IWorkoutDetail, 
+    IWorkoutSegment, IWorkoutStep
+
+} from '@gooin/garmin-connect/dist/garmin/types'
+import Running, {
+} from '@gooin/garmin-connect/dist/garmin/workouts/Running'
 const decompress = require('decompress');
 
 const unzipper = require('unzipper');
+
+import { getSyncConfigFromDB, saveSyncConfigToDB, updateSyncConfigToDB } from './sqlite';
 
 /**
  * 上传 .fit file
@@ -126,3 +134,71 @@ export const getGarminStatistics = async (client: GarminClientType): Promise<Rec
     // const detail = await GCClient.getActivity(recentRunningAct);
     // console.log('detail', detail);
 };
+
+export const getWorkouts = async (client: GarminClientType): Promise<IWorkout[]> => {
+    const workouts = client.getWorkouts(0, 100)
+    return workouts
+}
+
+
+export const getWorkoutDetail = async (workoutId: String, client: GarminClientType): Promise<IWorkoutDetail> => {
+    const workoutDetail = client.getWorkoutDetail({
+        workoutId: workoutId
+    })
+    return workoutDetail
+}
+
+export const addWorkout = async (workout: IWorkoutDetail | Running, client: GarminClientType): Promise<IWorkoutDetail> => {
+    return client.addWorkout(workout)
+}
+
+export const addRunningWorkout = async ( name: string, meters: number, description: string, client: GarminClientType): Promise<IWorkoutDetail> => {
+    return client.addRunningWorkout(name, meters, description)
+}
+
+
+export const syncWorkouts = async(fromClient: GarminClientType, toClient: GarminClientType, fromType: "CN" | "GLOBAL"): Promise<String> => {
+    try{
+        const workouts: IWorkout[] = (await fromClient.getWorkouts(0, 100)).reverse();
+        const syncType = "workout"
+        const lastName = await getSyncConfigFromDB(fromType, syncType)
+
+        let currentLastName = ""
+        console.log("可能需要同步课表数量:" + workouts.length)
+        let count = 0
+        for (let workout of workouts) {
+            // 遇到了相同的就中止同步
+            if (currentLastName == lastName) {
+                break;
+            }
+            try{
+                if (!workout.workoutId) {
+                    continue;
+                }
+                const workoutDetail = await fromClient.getWorkoutDetail({
+                    workoutId: workout.workoutId
+                });
+
+                await toClient.addWorkout(workoutDetail)
+
+                // 更新最后一条的名称
+                currentLastName = workout.workoutName
+                count++
+            } catch {
+
+            }
+        }
+        console.log("最终同步课表数量:" + count)
+        if (lastName) {
+            // 存在就更新
+            updateSyncConfigToDB(fromType, currentLastName ,syncType)
+        } else {
+            // 不存在就新增
+            saveSyncConfigToDB(fromType, currentLastName ,syncType)
+        }
+
+    }catch(e) {
+        
+    }
+    return ""
+}

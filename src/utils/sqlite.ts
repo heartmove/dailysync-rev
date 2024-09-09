@@ -15,6 +15,16 @@ export const initDB = async () => {
             region VARCHAR(20),
             session  TEXT
         )`);
+
+    await db.exec(`
+        CREATE TABLE IF NOT EXISTS sync_config (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user VARCHAR(20),
+            region VARCHAR(20),
+            name VARCHAR(200),
+            syncType VARCHAR(200),
+        )
+        `)
 };
 
 export const getDB = async () => {
@@ -66,4 +76,37 @@ export const decryptSession = (sessionStr: string): Record<string, any> => {
     const bytes = CryptoJS.AES.decrypt(sessionStr, AESKEY);
     const session = bytes.toString(CryptoJS.enc.Utf8);
     return JSON.parse(session);
+};
+
+
+export const saveSyncConfigToDB = async (type: 'CN' | 'GLOBAL', syncType: string, name: string) => {
+    const db = await getDB();
+    await db.run(
+        `INSERT INTO sync_config (user,region,name,syncType) VALUES (?,?,?,?)`,
+        GARMIN_USERNAME, type, name, syncType,
+    );
+};
+
+export const updateSyncConfigToDB = async (type: 'CN' | 'GLOBAL', syncType: string, name: string) => {
+    const db = await getDB();
+    await db.run(
+        'UPDATE sync_config SET name = ? WHERE user = ? AND region = ? AND syncType = ?',
+        name,
+        GARMIN_USERNAME,
+        type,
+        syncType,
+    );
+};
+
+export const getSyncConfigFromDB = async (type: 'CN' | 'GLOBAL', syncType: string): Promise<String | undefined> => {
+    const db = await getDB();
+    const queryResult = await db.get(
+        'SELECT session FROM sync_config WHERE user = ? AND region = ? AND syncType = ? ',
+        GARMIN_USERNAME, type,
+    );
+    if (!queryResult) {
+        return undefined;
+    }
+
+    return queryResult.name
 };

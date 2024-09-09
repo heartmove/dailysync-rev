@@ -6,13 +6,14 @@ import {
 } from '../constant';
 import { getGaminCNClient } from './garmin_cn';
 import { GarminClientType } from './type';
-import { downloadGarminActivity, uploadGarminActivity } from './garmin_common';
+import { downloadGarminActivity, uploadGarminActivity, syncWorkouts } from './garmin_common';
 import { number2capital } from './number_tricks';
 const core = require('@actions/core');
 import _ from 'lodash';
 import { getSessionFromDB, initDB, saveSessionToDB, updateSessionToDB } from './sqlite';
 
 const { GarminConnect } = require('@gooin/garmin-connect');
+// const { GarminConnect } = require('garmin-connect');
 
 const GARMIN_GLOBAL_USERNAME = process.env.GARMIN_GLOBAL_USERNAME ?? GARMIN_GLOBAL_USERNAME_DEFAULT;
 const GARMIN_GLOBAL_PASSWORD = process.env.GARMIN_GLOBAL_PASSWORD ?? GARMIN_GLOBAL_PASSWORD_DEFAULT;
@@ -118,4 +119,6 @@ export const syncGarminGlobal2GarminCN = async () => {
             }
         }
     }
+
+    await syncWorkouts(clientGlobal, clientCN, "GLOBAL")
 };
