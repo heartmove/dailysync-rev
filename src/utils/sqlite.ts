@@ -101,7 +101,7 @@ export const getSyncConfigFromDB = async (type: 'CN' | 'GLOBAL', syncType: strin
     const db = await getDB();
     const queryResult = await db.get(
         'SELECT name FROM sync_config WHERE user = ? AND region = ? AND syncType = ? ',
-        GARMIN_USERNAME, type,
+        GARMIN_USERNAME, type, syncType
     );
     if (!queryResult) {
         return "";
