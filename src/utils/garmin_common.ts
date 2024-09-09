@@ -204,10 +204,10 @@ export const syncWorkouts = async(fromClient: GarminClientType, toClient: Garmin
         console.log(`最终同步课表数量: ${count},最后的一条记录为【${currentLastName}】 `);
         if (lastName.length > 0) {
             // 存在就更新
-            updateSyncConfigToDB(fromType, currentLastName ,syncType)
+            updateSyncConfigToDB(fromType, syncType, currentLastName)
         } else {
             // 不存在就新增
-            saveSyncConfigToDB(fromType, currentLastName ,syncType)
+            saveSyncConfigToDB(fromType, syncType, currentLastName)
         }
 
     }catch(e) {
