@@ -175,6 +175,7 @@ export const syncWorkouts = async(fromClient: GarminClientType, toClient: Garmin
                 if (!workout.workoutId) {
                     continue;
                 }
+                console.log(`本次开始向${fromType}区上传课表【${workout.workoutName}】 `);
                 const workoutDetail = await fromClient.getWorkoutDetail({
                     workoutId: workout.workoutId
                 });

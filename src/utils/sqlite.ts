@@ -22,9 +22,8 @@ export const initDB = async () => {
             user VARCHAR(20),
             region VARCHAR(20),
             name VARCHAR(200),
-            syncType VARCHAR(200),
-        )
-        `)
+            syncType VARCHAR(200)
+        )`)
 };
 
 export const getDB = async () => {
