@@ -100,7 +100,7 @@ export const updateSyncConfigToDB = async (type: 'CN' | 'GLOBAL', syncType: stri
 export const getSyncConfigFromDB = async (type: 'CN' | 'GLOBAL', syncType: string): Promise<String | undefined> => {
     const db = await getDB();
     const queryResult = await db.get(
-        'SELECT session FROM sync_config WHERE user = ? AND region = ? AND syncType = ? ',
+        'SELECT name FROM sync_config WHERE user = ? AND region = ? AND syncType = ? ',
         GARMIN_USERNAME, type,
     );
     if (!queryResult) {
