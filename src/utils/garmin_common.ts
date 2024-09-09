@@ -164,7 +164,7 @@ export const syncWorkouts = async(fromClient: GarminClientType, toClient: Garmin
         const lastName = await getSyncConfigFromDB(fromType, syncType)
 
         let currentLastName = ""
-        console.log("可能需要同步课表数量:" + workouts.length)
+        console.log(`可能需要同步课表数量: ${workouts.length},上次最后一条记录为【${lastName}】 `);
         let count = 0
         for (let workout of workouts) {
             // 遇到了相同的就中止同步
@@ -189,8 +189,8 @@ export const syncWorkouts = async(fromClient: GarminClientType, toClient: Garmin
 
             }
         }
-        console.log("最终同步课表数量:" + count)
-        if (lastName) {
+        console.log(`最终同步课表数量: ${count},最后的一条记录为【${currentLastName}】 `);
+        if (lastName.length > 0) {
             // 存在就更新
             updateSyncConfigToDB(fromType, currentLastName ,syncType)
         } else {

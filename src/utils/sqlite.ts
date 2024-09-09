@@ -97,14 +97,14 @@ export const updateSyncConfigToDB = async (type: 'CN' | 'GLOBAL', syncType: stri
     );
 };
 
-export const getSyncConfigFromDB = async (type: 'CN' | 'GLOBAL', syncType: string): Promise<String | undefined> => {
+export const getSyncConfigFromDB = async (type: 'CN' | 'GLOBAL', syncType: string): Promise<String> => {
     const db = await getDB();
     const queryResult = await db.get(
         'SELECT name FROM sync_config WHERE user = ? AND region = ? AND syncType = ? ',
         GARMIN_USERNAME, type,
     );
     if (!queryResult) {
-        return undefined;
+        return "";
     }
 
     return queryResult.name
