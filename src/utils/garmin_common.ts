@@ -168,7 +168,7 @@ export const syncWorkouts = async(fromClient: GarminClientType, toClient: Garmin
         let count = 0
         for (let workout of workouts) {
             // 遇到了相同的就中止同步
-            if (currentLastName == lastName) {
+            if (workout.workoutName == lastName) {
                 break;
             }
             try{
