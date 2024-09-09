@@ -194,7 +194,7 @@ export const syncWorkouts = async(fromClient: GarminClientType, toClient: Garmin
         console.log("需要跳过的课表数量为：" + (skipCount + 1))
         // 跳过前面的，直接执行后面的
         for (let i = skipCount + 1; i++; i < total) {
-            if ((skipCount + 1) > total ) {
+            if (i >= total ) {
                 break
             }
             let workout = workouts[i]
