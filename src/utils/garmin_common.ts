@@ -220,7 +220,7 @@ export const syncWorkouts = async(fromClient: GarminClientType, toClient: Garmin
 
         console.log(`最终同步课表数量: ${count},最后的一条记录为【${currentLastName}】 `);
 
-        if (currentLastName.length < 0) {
+        if (currentLastName.length <= 0) {
             return "";
         }
 
