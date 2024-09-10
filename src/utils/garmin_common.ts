@@ -166,7 +166,7 @@ export const deleteWorkouts = async(client: GarminClientType): Promise<String> =
         }
         let diffMillis = new Date().getTime() - new Date(workout.createdDate).getTime()
         // 删除3天前的课表数据，防止堆积太多
-        if (workout.workoutId && diffMillis/(1000 * 60 * 60 * 24) > 3) {
+        if (workout.workoutId && diffMillis/(1000 * 60 * 60 * 24) > 1) {
             client.deleteWorkout({workoutId: workout.workoutId})
         }
     }
