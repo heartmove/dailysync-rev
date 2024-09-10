@@ -158,10 +158,13 @@ export const addRunningWorkout = async ( name: string, meters: number, descripti
 }
 
 
-export const DeleteWorkouts = async(client: GarminClientType): Promise<String> => {
+export const deleteWorkouts = async(client: GarminClientType): Promise<String> => {
     let workouts: IWorkout[] = (await client.getWorkouts(0, 999));
     for (let workout of workouts) {
-        let diffMillis = new Date().getTime() - workout.createdDate.getTime()
+        if (!workout.createdDate) {
+            continue
+        }
+        let diffMillis = new Date().getTime() - new Date(workout.createdDate).getTime()
         // 删除3天前的课表数据，防止堆积太多
         if (workout.workoutId && diffMillis/(1000 * 60 * 60 * 24) > 3) {
             client.deleteWorkout({workoutId: workout.workoutId})
@@ -174,8 +177,8 @@ export const DeleteWorkouts = async(client: GarminClientType): Promise<String> =
 export const syncWorkouts = async(fromClient: GarminClientType, toClient: GarminClientType, fromType: "CN" | "GLOBAL"): Promise<String> => {
     try{
         console.log("准备删除历史课表")
-        await DeleteWorkouts(fromClient)
-        await DeleteWorkouts(toClient)
+        await deleteWorkouts(fromClient)
+        await deleteWorkouts(toClient)
         console.log("删除历史课表结束")
         let workouts: IWorkout[] = (await fromClient.getWorkouts(0, 100));
         workouts.sort((a: IWorkout, b: IWorkout) =>
