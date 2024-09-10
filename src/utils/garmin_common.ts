@@ -183,9 +183,9 @@ export const syncWorkouts = async(fromClient: GarminClientType, toClient: Garmin
         let total = workouts.length
         for (let i = 0; i < total; i++) {
             let workout = workouts[i]
-            console.log("检测课表：" + workout.workoutName)
+            // console.log("检测课表：" + workout.workoutName)
             // 遇到了相同的就中止同步
-            if (workout.workoutName == lastName) {
+            if (workout.workoutId && workout.workoutId.toString() == lastName) {
                 console.log("有相同的课表，其序号为：" + i)
                 skipCount = i
                 break;
@@ -203,7 +203,7 @@ export const syncWorkouts = async(fromClient: GarminClientType, toClient: Garmin
                 if (!workout.workoutId) {
                     continue;
                 }
-                console.log(`本次开始向${fromType}区上传课表【${workout.workoutName}】 `);
+                console.log(`本次开始向${fromType}区上传课表【${workout.workoutName}】【${workout.workoutId}】 `);
                 const workoutDetail = await fromClient.getWorkoutDetail({
                     workoutId: workout.workoutId
                 });
@@ -211,7 +211,7 @@ export const syncWorkouts = async(fromClient: GarminClientType, toClient: Garmin
                 await toClient.addWorkout(workoutDetail)
 
                 // 更新最后一条的名称
-                currentLastName = workout.workoutName
+                currentLastName = workout.workoutId.toString()
                 count++
             } catch {
                 break
